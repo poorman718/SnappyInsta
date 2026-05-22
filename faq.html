@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - DownReels</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div id="navbar"></div>
+    <main class="container" style="padding: 3rem 1.5rem;">
+        <h1>Frequently Asked Questions</h1>
+        <div class="faq-list">
+            <div class="faq-item glass"><button class="faq-question">Is it free? <span class="chevron">▾</span></button><div class="faq-answer"><p>Yes, completely free.</p></div></div>
+            <div class="faq-item glass"><button class="faq-question">Do I need an account? <span class="chevron">▾</span></button><div class="faq-answer"><p>No registration required.</p></div></div>
+            <div class="faq-item glass"><button class="faq-question">What formats are supported? <span class="chevron">▾</span></button><div class="faq-answer"><p>Reels, Videos, Stories, Photos, Audio.</p></div></div>
+        </div>
+    </main>
+    <div id="footer"></div>
+    <script src="assets/js/config.js"></script>
+    <script>
+        async function loadComponent(url, id) {
+            const res = await fetch(url);
+            if (res.ok) document.getElementById(id).innerHTML = await res.text();
+        }
+        loadComponent('components/navbar.html', 'navbar');
+        loadComponent('components/footer.html', 'footer');
+    </script>
+</body>
+</html>
