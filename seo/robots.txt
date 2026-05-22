@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://downreels.example.com/sitemap.xml
