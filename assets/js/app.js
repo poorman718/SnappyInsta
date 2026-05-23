@@ -48,7 +48,6 @@ window.addEventListener('load', () => {
     async function triggerDownload(url) {
         if (isFetching) return;
         
-        // Accept any Instagram URL
         if (!url.includes('instagram.com') && !url.includes('instagr.am')) {
             errorMsg.textContent = '❌ Please enter a valid Instagram link.';
             return;
@@ -88,7 +87,6 @@ window.addEventListener('load', () => {
             return;
         }
 
-        // Filter out items without valid URLs
         const validItems = mediaItems.filter(item => item.url);
         
         if (validItems.length === 0) {
@@ -114,11 +112,9 @@ window.addEventListener('load', () => {
         const username = item.username || '@instagram';
         const duration = item.duration || '';
 
-        // Truncate title
         const words = title.split(' ');
         const shortTitle = words.slice(0, 6).join(' ') + (words.length > 6 ? '...' : '');
 
-        // Media type icon
         const typeIcon = getTypeIcon(mediaType);
         const typeLabel = getTypeLabel(mediaType);
 
@@ -156,56 +152,46 @@ window.addEventListener('load', () => {
         return card;
     }
 
-    function getTypeIcon(type) {
-        const icons = {
-            'video': '🎥',
-            'reel': '📹',
-            'story': '⭕',
-            'photo': '🖼️',
-            'profile_picture': '👤',
-            'audio': '🎵'
-        };
-        return icons[type] || '📸';
-    }
-
-    function getTypeLabel(type) {
-        const labels = {
-            'video': 'Video',
-            'reel': 'Reel',
-            'story': 'Story',
-            'photo': 'Photo',
-            'profile_picture': 'Profile Pic',
-            'audio': 'Audio'
-        };
-        return labels[type] || 'Media';
-    }
-
-    function getExtension(url, type) {
-        if (type === 'audio') return 'mp3';
-        if (type === 'photo' || type === 'profile_picture') return 'jpg';
-        if (url.includes('.jpg') || url.includes('.jpeg')) return 'jpg';
-        if (url.includes('.png')) return 'png';
-        return 'mp4';
-    }
-
     function attachRowEvents(card, downloadUrl, fullTitle, username, mediaType) {
         const dlBtn = card.querySelector('.btn-dl-row');
         if (dlBtn && downloadUrl) {
             dlBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 dlBtn.disabled = true;
-                dlBtn.innerHTML = `<span class="btn-spinner"></span> Downloading`;
+                dlBtn.innerHTML = `<span class="btn-spinner"></span> Downloading...`;
+                
                 try {
-                    await downloadFile(downloadUrl, `${sanitizeFilename(fullTitle)}_${username}.${getExtension(downloadUrl, mediaType)}`);
-                    dlBtn.innerHTML = `✓ Downloaded`;
-                    showToast('✅ Download complete!', 'success');
+                    const filename = `${sanitizeFilename(fullTitle)}_${username}.${getExtension(downloadUrl, mediaType)}`;
+                    const success = await forceDownload(downloadUrl, filename);
+                    
+                    if (success) {
+                        dlBtn.innerHTML = `✓ Downloaded`;
+                        showToast('✅ Download complete!', 'success');
+                    } else {
+                        const downloaded = await downloadWithLink(downloadUrl, filename);
+                        if (downloaded) {
+                            dlBtn.innerHTML = `✓ Downloaded`;
+                            showToast('✅ Download complete!', 'success');
+                        } else {
+                            dlBtn.innerHTML = `⬇ Download ${getTypeLabel(mediaType)}`;
+                            dlBtn.disabled = false;
+                            showToast('⚠️ Right-click Download button → Save link as...', 'info');
+                        }
+                    }
                 } catch (err) {
-                    // Fallback: open in new tab
-                    window.open(downloadUrl, '_blank');
-                    dlBtn.innerHTML = `✓ Opened`;
+                    console.error('Download error:', err);
+                    dlBtn.innerHTML = `⬇ Download ${getTypeLabel(mediaType)}`;
                     dlBtn.disabled = false;
-                    showToast('📂 Opened in new tab', 'info');
+                    showToast('⚠️ Click to retry or right-click to save', 'info');
                 }
+            });
+
+            // Right-click for direct save
+            dlBtn.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                const filename = `${sanitizeFilename(fullTitle)}_${username}.${getExtension(downloadUrl, mediaType)}`;
+                downloadWithLink(downloadUrl, filename);
+                return false;
             });
         }
 
@@ -233,18 +219,80 @@ window.addEventListener('load', () => {
         }
     }
 
-    async function downloadFile(url, filename) {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Network error');
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    async function forceDownload(url, filename) {
+        try {
+            const response = await fetch(url, {
+                mode: 'cors',
+                credentials: 'omit'
+            });
+            
+            if (!response.ok) throw new Error('Network error');
+            
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = blobUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(blobUrl);
+            }, 100);
+            
+            return true;
+        } catch (error) {
+            console.log('Direct fetch blocked, trying alternative...');
+            return false;
+        }
+    }
+
+    async function downloadWithLink(url, filename) {
+        try {
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            a.target = '_self';
+            a.rel = 'noopener noreferrer';
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+                document.body.removeChild(a);
+            }, 100);
+            
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function getTypeIcon(type) {
+        const icons = {
+            'video': '🎥', 'reel': '📹', 'story': '⭕',
+            'photo': '🖼️', 'profile_picture': '👤', 'audio': '🎵'
+        };
+        return icons[type] || '📸';
+    }
+
+    function getTypeLabel(type) {
+        const labels = {
+            'video': 'Video', 'reel': 'Reel', 'story': 'Story',
+            'photo': 'Photo', 'profile_picture': 'Profile Pic', 'audio': 'Audio'
+        };
+        return labels[type] || 'Media';
+    }
+
+    function getExtension(url, type) {
+        if (type === 'audio') return 'mp3';
+        if (type === 'photo' || type === 'profile_picture') return 'jpg';
+        if (url.includes('.jpg') || url.includes('.jpeg')) return 'jpg';
+        if (url.includes('.png')) return 'png';
+        return 'mp4';
     }
 
     function sanitizeFilename(name) {
