@@ -1,57 +1,69 @@
 window.addEventListener('load', () => {
     const urlInput = document.getElementById('urlInput');
-    const downloadBtn = document.getElementById('downloadBtn');
     const pasteBtn = document.getElementById('pasteBtn');
     const errorMsg = document.getElementById('errorMsg');
     const loader = document.getElementById('loader');
     const results = document.getElementById('results');
     const resultsGrid = document.getElementById('resultsGrid');
 
-    if (!downloadBtn || !urlInput) {
+    if (!pasteBtn || !urlInput) {
         console.error('Required elements not found');
         return;
     }
 
-    // Auto-paste button
-    if (pasteBtn) {
-        pasteBtn.addEventListener('click', async () => {
-            try {
-                const text = await navigator.clipboard.readText();
-                if (text) {
-                    urlInput.value = text;
-                    showToast('📋 Link pasted!', 'success');
-                } else {
-                    showToast('Clipboard is empty.', 'info');
-                }
-            } catch (err) {
-                showToast('❌ Unable to read clipboard. Paste manually.', 'error');
-            }
-        });
-    }
+    // Flag to avoid double fetch when paste button triggers both paste event and manual click
+    let isFetching = false;
 
-    // Download action
-    downloadBtn.addEventListener('click', handleDownload);
-    urlInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleDownload();
+    // ---------- Paste Button Click: Paste + Auto Fetch ----------
+    pasteBtn.addEventListener('click', async () => {
+        if (isFetching) return;
+        try {
+            const text = await navigator.clipboard.readText();
+            if (text) {
+                urlInput.value = text;
+                showToast('📋 Link pasted! Auto-downloading...', 'info');
+                await triggerDownload(text);  // auto fetch
+            } else {
+                showToast('Clipboard is empty.', 'info');
+            }
+        } catch (err) {
+            showToast('❌ Unable to read clipboard. Paste manually.', 'error');
+        }
     });
 
-    async function handleDownload() {
-        const url = urlInput.value.trim();
-        errorMsg.textContent = '';
-        results.style.display = 'none';
+    // ---------- Manual Paste (Ctrl+V) Detected ----------
+    urlInput.addEventListener('paste', async (e) => {
+        // Allow default paste to happen, then read the value after a short delay
+        setTimeout(async () => {
+            const url = urlInput.value.trim();
+            if (url && (url.includes('instagram.com') || url.includes('instagr.am'))) {
+                await triggerDownload(url);
+            }
+        }, 100);
+    });
 
-        if (!url) {
-            errorMsg.textContent = '❌ Please paste an Instagram URL.';
-            return;
+    // Optional: Enter key still works
+    urlInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const url = urlInput.value.trim();
+            if (url) triggerDownload(url);
         }
+    });
+
+    // ---------- Core Download Function ----------
+    async function triggerDownload(url) {
+        if (isFetching) return;
         if (!url.includes('instagram.com') && !url.includes('instagr.am')) {
             errorMsg.textContent = '❌ Please enter a valid Instagram link.';
             return;
         }
 
+        isFetching = true;
+        errorMsg.textContent = '';
+        results.style.display = 'none';
         loader.style.display = 'flex';
-        downloadBtn.disabled = true;
-        downloadBtn.style.opacity = '0.7';
+        pasteBtn.disabled = true;
+        pasteBtn.style.opacity = '0.7';
 
         try {
             const data = await fetchInstagramMedia(url);
@@ -66,11 +78,13 @@ window.addEventListener('load', () => {
             showToast('❌ Failed to fetch media.', 'error');
         } finally {
             loader.style.display = 'none';
-            downloadBtn.disabled = false;
-            downloadBtn.style.opacity = '1';
+            pasteBtn.disabled = false;
+            pasteBtn.style.opacity = '1';
+            isFetching = false;
         }
     }
 
+    // ---------- Rest of the code (renderResults, createHorizontalCard, etc.) remains EXACTLY the same ----------
     function renderResults(data) {
         resultsGrid.innerHTML = '';
         let mediaItems = [];
@@ -141,7 +155,6 @@ window.addEventListener('load', () => {
     }
 
     function attachRowEvents(card, videoUrl, fullTitle, username) {
-        // Download button
         const dlBtn = card.querySelector('.btn-dl-row');
         if (dlBtn && videoUrl) {
             dlBtn.addEventListener('click', async (e) => {
@@ -160,7 +173,6 @@ window.addEventListener('load', () => {
             });
         }
 
-        // New Link button
         const newBtn = card.querySelector('.btn-new-link');
         if (newBtn) {
             newBtn.addEventListener('click', () => {
@@ -172,7 +184,6 @@ window.addEventListener('load', () => {
             });
         }
 
-        // Title copy
         const titleEl = card.querySelector('.result-title');
         if (titleEl) {
             titleEl.addEventListener('click', async () => {
@@ -220,7 +231,7 @@ window.addEventListener('load', () => {
     });
 });
 
-// Add animations
+// Animations
 const style = document.createElement('style');
 style.textContent = `
     @keyframes fadeInUp {
