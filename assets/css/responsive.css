@@ -1,7 +1,6 @@
 /* Tablet */
 @media (max-width: 1024px) {
     .results-grid {
-        grid-template-columns: repeat(2, 1fr);
         gap: 1.2rem;
     }
 }
@@ -36,7 +35,6 @@
     }
     
     .results-grid {
-        grid-template-columns: 1fr;
         gap: 1rem;
     }
     
@@ -60,22 +58,22 @@
     }
     
     /* Media card mobile */
-    .media-preview-wrapper {
-        padding-top: 50%; /* More square on mobile */
+    .result-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.8rem;
+        padding: 1rem;
     }
-    
-    .media-title {
-        font-size: 0.85rem;
+    .result-preview {
+        width: 100%;
+        height: 180px;
     }
-    
-    .btn-download-media {
-        padding: 0.7rem 1rem;
-        font-size: 0.85rem;
+    .result-actions {
+        justify-content: space-between;
     }
-    
-    .play-preview-btn {
-        width: 44px;
-        height: 44px;
+    .btn-dl-row, .btn-new-link {
+        flex: 1;
+        justify-content: center;
     }
 }
 
@@ -105,21 +103,17 @@
         border-radius: 25px;
     }
     
-    .btn-download {
+    .btn-paste, .btn-download {
         padding: 0.8rem;
         font-size: 0.9rem;
     }
     
     .results-grid {
-        grid-template-columns: 1fr;
+        gap: 0.8rem;
     }
     
-    .media-card {
+    .result-row {
         padding: 0.8rem;
-    }
-    
-    .media-preview-wrapper {
-        padding-top: 55%;
     }
     
     .download-actions {
@@ -127,23 +121,8 @@
         gap: 0.5rem;
     }
     
-    .btn-download-media {
+    .btn-dl-row, .btn-new-link {
         width: 100%;
-    }
-    
-    .download-size {
-        text-align: center;
-        width: 100%;
-    }
-    
-    .creator-avatar {
-        width: 28px;
-        height: 28px;
-        font-size: 0.8rem;
-    }
-    
-    .creator-username {
-        font-size: 0.8rem;
     }
     
     .section-header h2 {
@@ -154,31 +133,6 @@
 /* Large Desktop */
 @media (min-width: 1440px) {
     .results-grid {
-        grid-template-columns: repeat(3, 1fr);
         gap: 2rem;
-    }
-    
-    .media-preview-wrapper {
-        padding-top: 60%;
-    }
-}
-
-@media (max-width: 600px) {
-    .result-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.8rem;
-        padding: 1rem;
-    }
-    .result-preview {
-        width: 100%;
-        height: 180px;
-    }
-    .result-actions {
-        justify-content: space-between;
-    }
-    .btn-dl-row, .btn-new-link {
-        flex: 1;
-        justify-content: center;
     }
 }
