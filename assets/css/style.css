@@ -727,8 +727,8 @@ body.results-active .hero {
 }
 
 .result-row {
-    width: 100%;
-    max-width: 500px;       /* 👈 500px maximum */
+    width: 200%;
+    max-width: 1200px;       /* 👈 500px maximum */
     margin: 0 auto;         /* centre mein laane ke liye */
     /* baaki styles jo pehle se hain, unhe chhedo mat */
 }
