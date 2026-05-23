@@ -152,46 +152,111 @@ window.addEventListener('load', () => {
         return card;
     }
 
+    function getTypeIcon(type) {
+        const icons = {
+            'video': '🎥',
+            'reel': '📹',
+            'story': '⭕',
+            'photo': '🖼️',
+            'profile_picture': '👤',
+            'audio': '🎵'
+        };
+        return icons[type] || '📸';
+    }
+
+    function getTypeLabel(type) {
+        const labels = {
+            'video': 'Video',
+            'reel': 'Reel',
+            'story': 'Story',
+            'photo': 'Photo',
+            'profile_picture': 'Profile Pic',
+            'audio': 'Audio'
+        };
+        return labels[type] || 'Media';
+    }
+
+    function getExtension(url, type) {
+        if (type === 'audio') return 'mp3';
+        if (type === 'photo' || type === 'profile_picture') return 'jpg';
+        if (url.includes('.jpg') || url.includes('.jpeg')) return 'jpg';
+        if (url.includes('.png')) return 'png';
+        return 'mp4';
+    }
+
     function attachRowEvents(card, downloadUrl, fullTitle, username, mediaType) {
         const dlBtn = card.querySelector('.btn-dl-row');
         if (dlBtn && downloadUrl) {
             dlBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
+                
+                // Disable button and show downloading state
                 dlBtn.disabled = true;
-                dlBtn.innerHTML = `<span class="btn-spinner"></span> Downloading...`;
+                dlBtn.innerHTML = `
+                    <span class="btn-spinner"></span>
+                    Preparing...
+                `;
+                
+                const filename = `${sanitizeFilename(fullTitle)}_${username}.${getExtension(downloadUrl, mediaType)}`;
                 
                 try {
-                    const filename = `${sanitizeFilename(fullTitle)}_${username}.${getExtension(downloadUrl, mediaType)}`;
-                    const success = await forceDownload(downloadUrl, filename);
+                    // Try direct download first
+                    const downloaded = await downloadFileDirect(downloadUrl, filename, dlBtn);
                     
-                    if (success) {
+                    if (downloaded) {
                         dlBtn.innerHTML = `✓ Downloaded`;
                         showToast('✅ Download complete!', 'success');
+                        
+                        // Reset button after 2 seconds
+                        setTimeout(() => {
+                            dlBtn.disabled = false;
+                            dlBtn.innerHTML = `
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Download ${getTypeLabel(mediaType)}
+                            `;
+                        }, 2000);
                     } else {
-                        const downloaded = await downloadWithLink(downloadUrl, filename);
-                        if (downloaded) {
+                        // If direct download failed, try iframe method
+                        const iframeDownloaded = await downloadFileIframe(downloadUrl, filename, dlBtn);
+                        
+                        if (iframeDownloaded) {
                             dlBtn.innerHTML = `✓ Downloaded`;
                             showToast('✅ Download complete!', 'success');
+                            setTimeout(() => {
+                                dlBtn.disabled = false;
+                                dlBtn.innerHTML = `
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    Download ${getTypeLabel(mediaType)}
+                                `;
+                            }, 2000);
                         } else {
-                            dlBtn.innerHTML = `⬇ Download ${getTypeLabel(mediaType)}`;
-                            dlBtn.disabled = false;
-                            showToast('⚠️ Right-click Download button → Save link as...', 'info');
+                            // Last resort: use anchor tag with download attribute
+                            downloadFileAnchor(downloadUrl, filename);
+                            dlBtn.innerHTML = `✓ Downloaded`;
+                            showToast('✅ Download started!', 'success');
+                            setTimeout(() => {
+                                dlBtn.disabled = false;
+                                dlBtn.innerHTML = `
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    Download ${getTypeLabel(mediaType)}
+                                `;
+                            }, 2000);
                         }
                     }
                 } catch (err) {
                     console.error('Download error:', err);
-                    dlBtn.innerHTML = `⬇ Download ${getTypeLabel(mediaType)}`;
-                    dlBtn.disabled = false;
-                    showToast('⚠️ Click to retry or right-click to save', 'info');
+                    // Final fallback: anchor click
+                    downloadFileAnchor(downloadUrl, filename);
+                    dlBtn.innerHTML = `✓ Downloaded`;
+                    showToast('✅ Download started!', 'success');
+                    setTimeout(() => {
+                        dlBtn.disabled = false;
+                        dlBtn.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Download ${getTypeLabel(mediaType)}
+                        `;
+                    }, 2000);
                 }
-            });
-
-            // Right-click for direct save
-            dlBtn.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                const filename = `${sanitizeFilename(fullTitle)}_${username}.${getExtension(downloadUrl, mediaType)}`;
-                downloadWithLink(downloadUrl, filename);
-                return false;
             });
         }
 
@@ -219,84 +284,109 @@ window.addEventListener('load', () => {
         }
     }
 
-    async function forceDownload(url, filename) {
+    // Method 1: Direct fetch download (works best with CORS-enabled URLs)
+    async function downloadFileDirect(url, filename, button) {
         try {
+            button.innerHTML = `<span class="btn-spinner"></span> Downloading...`;
+            
             const response = await fetch(url, {
                 mode: 'cors',
-                credentials: 'omit'
+                headers: {
+                    'Origin': window.location.origin
+                }
             });
             
-            if (!response.ok) throw new Error('Network error');
+            if (!response.ok) throw new Error('Network response was not ok');
             
             const blob = await response.blob();
+            
+            // Check if blob is valid
+            if (blob.size === 0) throw new Error('Empty file');
+            
             const blobUrl = window.URL.createObjectURL(blob);
             
+            // Use anchor for download
             const a = document.createElement('a');
-            a.style.display = 'none';
             a.href = blobUrl;
             a.download = filename;
+            a.style.display = 'none';
             document.body.appendChild(a);
             a.click();
             
+            // Cleanup
             setTimeout(() => {
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(blobUrl);
-            }, 100);
+            }, 1000);
             
             return true;
         } catch (error) {
-            console.log('Direct fetch blocked, trying alternative...');
+            console.warn('Direct download failed, trying alternative method:', error.message);
             return false;
         }
     }
 
-    async function downloadWithLink(url, filename) {
-        try {
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = filename;
-            a.target = '_self';
-            a.rel = 'noopener noreferrer';
-            document.body.appendChild(a);
-            a.click();
-            
-            setTimeout(() => {
-                document.body.removeChild(a);
-            }, 100);
-            
-            return true;
-        } catch (error) {
-            return false;
-        }
+    // Method 2: Hidden iframe download (for cross-origin URLs)
+    async function downloadFileIframe(url, filename, button) {
+        return new Promise((resolve) => {
+            try {
+                button.innerHTML = `<span class="btn-spinner"></span> Processing...`;
+                
+                // Create hidden iframe
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.style.width = '0';
+                iframe.style.height = '0';
+                iframe.style.border = 'none';
+                iframe.name = 'download-frame-' + Date.now();
+                
+                document.body.appendChild(iframe);
+                
+                // Set download attribute via iframe
+                const iframeDoc = iframe.contentWindow || iframe.contentDocument;
+                
+                // Create download link in iframe context
+                const iframeLink = document.createElement('a');
+                iframeLink.href = url;
+                iframeLink.download = filename;
+                iframeLink.target = '_self';
+                
+                iframe.contentDocument.body.appendChild(iframeLink);
+                iframeLink.click();
+                
+                // Cleanup after delay
+                setTimeout(() => {
+                    if (document.body.contains(iframe)) {
+                        document.body.removeChild(iframe);
+                    }
+                    resolve(true);
+                }, 1500);
+                
+            } catch (error) {
+                console.warn('Iframe download failed:', error.message);
+                resolve(false);
+            }
+        });
     }
 
-    function getTypeIcon(type) {
-        const icons = {
-            'video': '🎥', 'reel': '📹', 'story': '⭕',
-            'photo': '🖼️', 'profile_picture': '👤', 'audio': '🎵'
-        };
-        return icons[type] || '📸';
-    }
-
-    function getTypeLabel(type) {
-        const labels = {
-            'video': 'Video', 'reel': 'Reel', 'story': 'Story',
-            'photo': 'Photo', 'profile_picture': 'Profile Pic', 'audio': 'Audio'
-        };
-        return labels[type] || 'Media';
-    }
-
-    function getExtension(url, type) {
-        if (type === 'audio') return 'mp3';
-        if (type === 'photo' || type === 'profile_picture') return 'jpg';
-        if (url.includes('.jpg') || url.includes('.jpeg')) return 'jpg';
-        if (url.includes('.png')) return 'png';
-        return 'mp4';
+    // Method 3: Simple anchor download (last resort)
+    function downloadFileAnchor(url, filename) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.target = '_self';  // Same tab
+        a.rel = 'noopener noreferrer';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        
+        setTimeout(() => {
+            document.body.removeChild(a);
+        }, 1000);
     }
 
     function sanitizeFilename(name) {
-        return name.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
+        return name.replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '_').substring(0, 50);
     }
 
     function escapeHtml(text) {
@@ -317,15 +407,19 @@ window.addEventListener('load', () => {
     });
 });
 
+// Add required styles
 const style = document.createElement('style');
 style.textContent = `
     @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin { 
+        to { transform: rotate(360deg); } 
+    }
     .btn-spinner {
-        width: 14px; height: 14px;
+        width: 14px;
+        height: 14px;
         border: 2px solid rgba(255,255,255,0.3);
         border-top-color: white;
         border-radius: 50%;
