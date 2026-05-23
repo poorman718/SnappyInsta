@@ -150,6 +150,13 @@ body {
     min-height: 1.2rem;
 }
 
+.btn-paste {
+    /* existing styles... */
+    padding: 0 1.5rem;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
 /* Loader */
 .loader-container {
     display: flex;
