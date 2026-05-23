@@ -1,36 +1,120 @@
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
+    .result-row {
+        max-width: 95%;
+    }
+}
+
+@media (max-width: 900px) {
     .result-row {
         flex-direction: column;
-        max-width: 95%;
         min-height: auto;
         padding: 1.5rem;
+        gap: 1.2rem;
     }
     .result-preview {
         width: 100%;
         min-width: auto;
-        height: 250px;
+        height: 280px;
     }
-    .result-actions { flex-direction: row; }
-    .btn-dl-row, .btn-new-link { flex: 1; }
+    .result-actions {
+        flex-direction: row;
+    }
+    .btn-dl-row, .btn-new-link {
+        flex: 1;
+    }
 }
 
 @media (max-width: 768px) {
-    .hero { padding: 3rem 0 4rem; }
-    .hero-title { font-size: 2rem; }
-    .downloader-card { padding: 2rem; }
-    .input-group { flex-direction: column; }
-    .btn-paste { width: 100%; }
-    .result-row { padding: 1.2rem; }
-    .result-preview { height: 220px; }
-    .steps, .features-grid { grid-template-columns: 1fr; }
-    section { padding: 3rem 0; }
+    .navbar-instagram {
+        padding: 0.8rem 1.2rem;
+    }
+    .nav-links {
+        gap: 1rem;
+    }
+    .nav-links a {
+        font-size: 0.85rem;
+    }
+    
+    .hero {
+        min-height: 80vh;
+        padding: 3rem 0 4rem;
+    }
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .downloader-card {
+        padding: 1.8rem;
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    .btn-paste {
+        width: 100%;
+    }
+    
+    .result-row {
+        padding: 1.2rem;
+    }
+    .result-preview {
+        height: 240px;
+    }
+    
+    .steps, .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    section {
+        padding: 3rem 0;
+    }
 }
 
 @media (max-width: 480px) {
-    .hero-title { font-size: 1.8rem; }
-    .url-input { padding: 1rem 1.2rem; font-size: 1rem; }
-    .btn-paste { padding: 1rem; font-size: 1rem; }
-    .result-preview { height: 200px; }
-    .result-title { font-size: 1.1rem; }
-    .btn-dl-row, .btn-new-link { padding: 0.7rem; }
+    .nav-brand {
+        font-size: 1.1rem;
+    }
+    .nav-links a {
+        font-size: 0.8rem;
+        margin: 0 0.2rem;
+    }
+    
+    .hero {
+        min-height: 70vh;
+        padding: 2rem 0 3rem;
+    }
+    .hero-title {
+        font-size: 1.5rem;
+    }
+    
+    .downloader-card {
+        padding: 1.2rem;
+        border-radius: var(--radius);
+    }
+    
+    .url-input {
+        padding: 0.9rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    .btn-paste {
+        padding: 0.9rem;
+        font-size: 0.9rem;
+    }
+    
+    .result-row {
+        padding: 1rem;
+    }
+    .result-preview {
+        height: 200px;
+    }
+    .result-title {
+        font-size: 1rem;
+    }
+    .result-actions {
+        flex-direction: column;
+    }
+    
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
 }
