@@ -101,14 +101,15 @@ nav a:hover { color: var(--text); }
 .theme-toggle-btn:hover { background: var(--border); }
 
 /* ===== Hero Section with Instagram Gradient ===== */
-.hero {
-    background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-    padding: 4rem 0 5rem;
-    display: flex;
-    align-items: flex-start;   /* content top middle */
-    justify-content: center;
-    text-align: center;
-    position: relative;
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.2);   /* light mode: almost no overlay */
+}
+
+body.dark .hero::before {
+    background: rgba(0, 0, 0, 0.4);         /* dark mode: thoda dark for readability */
 }
 .hero::before {
     content: '';
