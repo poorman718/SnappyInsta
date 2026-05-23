@@ -201,14 +201,7 @@ window.addEventListener('load', () => {
                     showToast('✅ Download complete!', 'success');
                 } catch (err) {
                     // Fallback: open in new tab
-                    window.open(downloadUrl, '_blank');
-                    dlBtn.innerHTML = `✓ Opened`;
-                    dlBtn.disabled = false;
-                    showToast('📂 Opened in new tab', 'info');
-                }
-            });
-        }
-
+                    
         const newBtn = card.querySelector('.btn-new-link');
         if (newBtn) {
             newBtn.addEventListener('click', () => {
