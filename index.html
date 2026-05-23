@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DownReels - Instagram Video & Reel Downloader | Free HD</title>
-    <meta name="description" content="Download Instagram Reels, Videos, Stories, Photos & Audio in HD. No watermark, no login, 100% free.">
+    <title>DownReels - Instagram Video, Reel, Story & Photo Downloader | Free HD</title>
+    <meta name="description" content="Download Instagram Reels, Videos, Stories, Photos, Profile Pictures & Audio in HD. No watermark, no login, 100% free.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
@@ -18,9 +18,8 @@
     <main>
         <!-- Hero / Downloader -->
         <section class="hero" id="hero">
-            <div class="container">
+            <div class="container hero-container-full">
                 <h1 class="hero-title">Download Instagram <span class="gradient-text">Reels & Videos</span> Instantly</h1>
-                <p class="hero-subtitle">Paste any Instagram link, hit download, and get HD media in seconds. No watermark, no login, completely free.</p>
 
                 <div class="downloader-card glass" id="downloaderCard">
                     <div class="input-group">
@@ -42,7 +41,7 @@
                     <p>Fetching media...</p>
                 </div>
 
-                <!-- Results (full width) -->
+                <!-- Results -->
                 <div id="results" class="results-section" style="display:none;">
                     <div id="resultsGrid" class="results-grid"></div>
                 </div>
@@ -64,8 +63,8 @@
                     </div>
                     <div class="step-card glass">
                         <div class="step-number">02</div>
-                        <h3>Paste & Click Download</h3>
-                        <p>Paste the link into the box above and hit the Download button.</p>
+                        <h3>Paste or Click Button</h3>
+                        <p>Paste the link manually or click the Paste button - auto-download starts instantly.</p>
                     </div>
                     <div class="step-card glass">
                         <div class="step-number">03</div>
@@ -91,8 +90,8 @@
                     </div>
                     <div class="feature-card glass">
                         <div class="feature-icon">🎥</div>
-                        <h3>HD Quality</h3>
-                        <p>Get videos up to 1080p, crystal clear and uncompressed.</p>
+                        <h3>All Formats</h3>
+                        <p>Reels, Videos, Stories, Photos, Profile Pics & Audio supported.</p>
                     </div>
                     <div class="feature-card glass">
                         <div class="feature-icon">🔒</div>
@@ -126,12 +125,12 @@
                     <h2>All Instagram Formats</h2>
                 </div>
                 <div class="formats-grid">
-                    <div class="format-item glass">Reels</div>
-                    <div class="format-item glass">Videos</div>
-                    <div class="format-item glass">Stories</div>
-                    <div class="format-item glass">Photos</div>
-                    <div class="format-item glass">Audio</div>
-                    <div class="format-item glass">Profile Pics</div>
+                    <div class="format-item glass">📹 Reels</div>
+                    <div class="format-item glass">🎥 Videos</div>
+                    <div class="format-item glass">⭕ Stories</div>
+                    <div class="format-item glass">🖼️ Photos</div>
+                    <div class="format-item glass">👤 Profile Pics</div>
+                    <div class="format-item glass">🎵 Audio</div>
                 </div>
             </div>
         </section>
@@ -149,8 +148,8 @@
                         <div class="faq-answer"><p>Yes! 100% free with no hidden fees. Download unlimited content.</p></div>
                     </div>
                     <div class="faq-item glass">
-                        <button class="faq-question">Do I need to install anything? <span class="chevron">▾</span></button>
-                        <div class="faq-answer"><p>No. It works directly in your browser on any device.</p></div>
+                        <button class="faq-question">What content can I download? <span class="chevron">▾</span></button>
+                        <div class="faq-answer"><p>Reels, Videos, Stories, Photos, Profile Pictures, and Audio from public Instagram accounts.</p></div>
                     </div>
                     <div class="faq-item glass">
                         <button class="faq-question">Are the downloads watermarked? <span class="chevron">▾</span></button>
@@ -167,8 +166,8 @@
         <!-- SEO Content -->
         <section class="seo-content" id="seo-content">
             <div class="container">
-                <h2>Free Instagram Downloader – No Watermark, HD</h2>
-                <p>DownReels is the fastest <strong>Instagram video downloader</strong> for Reels, Stories, Photos, and Profile Pictures. Built for creators and marketers who need quick, high‑quality downloads without any bloat. Our tool works on all modern browsers and delivers your media with a single click. No sign‑up, no limits, always free.</p>
+                <h2>Free Instagram Downloader – Reels, Stories, Photos, Videos</h2>
+                <p>DownReels is the most complete <strong>Instagram downloader</strong> supporting Reels, Videos, Stories, Photos, Profile Pictures, and Audio extraction. Built for creators who need quick downloads of all Instagram content types. Works on all browsers, no sign‑up required, always free with no watermarks.</p>
             </div>
         </section>
     </main>
@@ -187,7 +186,6 @@
     <script src="assets/js/ui.js"></script>
     <script src="assets/js/app.js"></script>
 
-    <!-- Load navbar/footer dynamically -->
     <script>
         async function loadComponent(url, targetId) {
             try {
