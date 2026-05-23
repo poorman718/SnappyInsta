@@ -1,7 +1,7 @@
 /* Tablet */
 @media (max-width: 1024px) {
-    .results-grid {
-        gap: 1.2rem;
+    .result-row {
+        max-width: 90%;
     }
 }
 
@@ -23,24 +23,35 @@
         flex-direction: column;
     }
     
-    .btn-download {
+    .url-input, .btn-paste {
         width: 100%;
         justify-content: center;
+    }
+    
+    .btn-paste {
         padding: 0.9rem;
     }
     
-    .url-input {
-        padding: 0.9rem 1.2rem;
-        font-size: 0.95rem;
+    .result-row {
+        flex-direction: column;
+        align-items: stretch;
+        max-width: 95%;
+        padding: 1.2rem;
     }
     
-    .results-grid {
-        gap: 1rem;
+    .result-preview {
+        width: 100%;
+        height: 200px;
     }
     
-    .downloader-card {
-        padding: 1.5rem;
-        margin: 0 0.5rem;
+    .result-actions {
+        flex-direction: row;
+        justify-content: center;
+    }
+    
+    .btn-dl-row, .btn-new-link {
+        flex: 1;
+        justify-content: center;
     }
     
     .steps,
@@ -55,25 +66,6 @@
     .format-item {
         padding: 0.6rem 1.2rem;
         font-size: 0.85rem;
-    }
-    
-    /* Media card mobile */
-    .result-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.8rem;
-        padding: 1rem;
-    }
-    .result-preview {
-        width: 100%;
-        height: 180px;
-    }
-    .result-actions {
-        justify-content: space-between;
-    }
-    .btn-dl-row, .btn-new-link {
-        flex: 1;
-        justify-content: center;
     }
 }
 
@@ -103,26 +95,21 @@
         border-radius: 25px;
     }
     
-    .btn-paste, .btn-download {
+    .btn-paste {
         padding: 0.8rem;
-        font-size: 0.9rem;
-    }
-    
-    .results-grid {
-        gap: 0.8rem;
+        font-size: 0.85rem;
     }
     
     .result-row {
-        padding: 0.8rem;
+        padding: 1rem;
     }
     
-    .download-actions {
-        flex-direction: column;
-        gap: 0.5rem;
+    .result-preview {
+        height: 180px;
     }
     
-    .btn-dl-row, .btn-new-link {
-        width: 100%;
+    .result-title {
+        font-size: 1rem;
     }
     
     .section-header h2 {
@@ -132,7 +119,7 @@
 
 /* Large Desktop */
 @media (min-width: 1440px) {
-    .results-grid {
-        gap: 2rem;
+    .result-row {
+        max-width: 900px;
     }
 }
