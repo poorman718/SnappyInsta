@@ -11,6 +11,24 @@ window.addEventListener('load', () => {
         return;
     }
 
+    // Paste button – clipboard se link le kar input mein daalna
+const pasteBtn = document.getElementById('pasteBtn');
+if (pasteBtn) {
+    pasteBtn.addEventListener('click', async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            if (text) {
+                document.getElementById('urlInput').value = text;
+                showToast('📋 Link pasted!', 'success');
+            } else {
+                showToast('Clipboard is empty.', 'info');
+            }
+        } catch (err) {
+            showToast('❌ Unable to read clipboard. Paste manually.', 'error');
+        }
+    });
+}
+
     downloadBtn.addEventListener('click', handleDownload);
     urlInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleDownload();
