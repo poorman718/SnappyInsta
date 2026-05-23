@@ -717,3 +717,42 @@ body.results-active .hero {
     padding-top: 2rem;
     padding-bottom: 1rem;
 }
+
+/* ========== RESULT ROW WIDTH & CENTERING ========== */
+.results-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.result-row {
+    width: 100%;
+    max-width: 500px;       /* 👈 500px maximum */
+    margin: 0 auto;         /* centre mein laane ke liye */
+    /* baaki styles jo pehle se hain, unhe chhedo mat */
+}
+
+/* ========== PASTE BUTTON ========== */
+.btn-paste {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 50px;
+    padding: 0 1.2rem;
+    color: #c4b5fd;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+.btn-paste:hover {
+    background: rgba(168, 85, 247, 0.25);
+    border-color: var(--purple);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+}
+.btn-paste:active {
+    transform: scale(0.95);
+}
