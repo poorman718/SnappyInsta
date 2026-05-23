@@ -27,13 +27,17 @@
                 <p class="hero-subtitle">Paste any Instagram link, hit download, and get HD media in seconds. No watermark, no login, completely free.</p>
 
                 <div class="downloader-card glass">
-<div class="input-group">
+                <div class="input-group">
     <input type="url" id="urlInput" class="url-input" placeholder="Paste Instagram URL here..." autocomplete="off">
-    <button type="button" id="pasteBtn" class="btn-paste" title="Paste from clipboard">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+    
+    <!-- 🆕 Auto Paste Button -->
+    <button id="pasteBtn" class="btn-paste" title="Paste from clipboard" aria-label="Auto paste link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
         </svg>
     </button>
+    
     <button id="downloadBtn" class="btn-download">
         <span>Download</span>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
