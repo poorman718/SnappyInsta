@@ -351,3 +351,45 @@ body.results-active .hero { min-height:auto; padding:2rem 0; }
         padding-bottom: 56.25%; /* 16:9 for mobile */
     }
 }
+
+/* Simple download buttons */
+.btn-thumbnail, .btn-video {
+    padding: 0.7rem 1.2rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: transform 0.2s;
+}
+.btn-thumbnail {
+    background: var(--bg-secondary);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+.btn-video {
+    background: var(--ig-gradient);
+    color: #fff;
+}
+.btn-thumbnail:hover:not(:disabled), .btn-video:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+.btn-thumbnail:disabled, .btn-video:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+.btn-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
