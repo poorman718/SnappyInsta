@@ -7,9 +7,7 @@
             e.stopPropagation();
             dropdown.classList.toggle('open');
         });
-        // Close when clicking outside
         document.addEventListener('click', () => dropdown.classList.remove('open'));
-        // Platform links (just for demo)
         dropdown.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -20,7 +18,7 @@
         });
     }
 
-    // ========== Q&A link (scroll to FAQ) ==========
+    // Q&A link scroll
     const qaLink = document.getElementById('qaLink');
     if (qaLink) {
         qaLink.addEventListener('click', (e) => {
@@ -35,30 +33,18 @@
     const modalClose = document.getElementById('modalClose');
 
     const modalData = {
-        disclaimer: {
-            title: 'Disclaimer',
-            text: 'DownReels is an independent tool and is not affiliated with Instagram. Download only content you have rights to use.'
-        },
-        privacy: {
-            title: 'Privacy Policy',
-            text: 'We do not collect or store any personal data. All downloads are processed client-side. No cookies are used.'
-        },
-        terms: {
-            title: 'Terms of Service',
-            text: 'By using this tool you agree to download only content from public accounts for personal use. Misuse is prohibited.'
-        },
-        about: {
-            title: 'About DownReels',
-            text: 'DownReels is the fastest Instagram video downloader. Built for creators who need quick, watermark-free downloads.'
-        }
+        disclaimer: { title: 'Disclaimer', text: 'DownReels is an independent tool and is not affiliated with Instagram. Download only content you have rights to use.' },
+        privacy: { title: 'Privacy Policy', text: 'We do not collect or store any personal data. All downloads are processed client-side.' },
+        terms: { title: 'Terms of Service', text: 'By using this tool you agree to download only content from public accounts for personal use.' },
+        about: { title: 'About DownReels', text: 'DownReels is the fastest Instagram video downloader. Built for creators who need quick, watermark-free downloads.' }
     };
 
     document.querySelectorAll('.footer-link').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            const modalKey = link.getAttribute('data-modal');
-            if (modalKey && modalData[modalKey]) {
-                modalContent.innerHTML = `<h3>${modalData[modalKey].title}</h3><p>${modalData[modalKey].text}</p>`;
+            const key = link.getAttribute('data-modal');
+            if (key && modalData[key]) {
+                modalContent.innerHTML = `<h3>${modalData[key].title}</h3><p>${modalData[key].text}</p>`;
                 modalOverlay.classList.add('active');
             }
         });
