@@ -3,32 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snappy Insta</title>
-    <meta name="description" content="Download Instagram Reels, Videos, Stories, Photos, Profile Pictures & Audio in HD.">
+    <title>DownReels - Instagram Video Downloader | HD No Watermark</title>
+    <meta name="description" content="Download Instagram Reels, Videos, Stories in HD. No watermark, no login, 100% free.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
-
-    <!-- 👇 ADD YOUR FAVICON HERE 👇 -->
-    <link rel="icon" type="image/png" href="favicon.svg">   
 </head>
 <body class="dark">
 
-    <!-- Particle Background Canvas -->
-    <canvas id="particleCanvas"></canvas>
-    
-    <!-- Overlay for mobile drawer -->
-    <div class="overlay" id="overlay"></div>
-    
-    <!-- Header -->
-    <header class="navbar-instagram">
+    <!-- ========== PARTICLE BACKGROUND ========== -->
+    <div id="particle-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden;"></div>
+
+    <!-- ========== HEADER ========== -->
+    <header class="navbar-instagram" style="position:relative;z-index:10;">
         <a href="index.html" class="nav-brand">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5"/>
             </svg>
-            Snappy Insta
+            DownReels
         </a>
         <div class="nav-links">
             <a href="index.html">Home</a>
@@ -45,7 +39,7 @@
         </div>
     </header>
 
-    <main>
+    <main style="position:relative;z-index:1;">
         <!-- Hero -->
         <section class="hero" id="hero">
             <div class="container hero-container">
@@ -80,11 +74,11 @@
             <div class="container">
                 <div class="section-header">
                     <span class="badge">✨ Features</span>
-                    <h2>Why Snappy Insta?</h2>
+                    <h2>Why DownReels?</h2>
                 </div>
                 <div class="features-grid">
                     <div class="feature-card"><div class="feature-icon">⚡</div><h3>Lightning Fast</h3><p>Downloads start in seconds.</p></div>
-                    <div class="feature-card"><div class="feature-icon">🎥</div><h3>All Formats</h3><p>Reels, Videos, Stories, Photos, Audio.</p></div>
+                    <div class="feature-card"><div class="feature-icon">🎥</div><h3>All Videos</h3><p>Reels, Videos, Stories supported.</p></div>
                     <div class="feature-card"><div class="feature-icon">🔒</div><h3>100% Secure</h3><p>No account needed.</p></div>
                     <div class="feature-card"><div class="feature-icon">💧</div><h3>No Watermark</h3><p>Clean original files.</p></div>
                 </div>
@@ -99,17 +93,16 @@
                     <h2>Frequently Asked Questions</h2>
                 </div>
                 <div class="faq-list">
-                    <div class="faq-item"><button class="faq-question">Is Snappy Insta free? <span>▾</span></button><div class="faq-answer"><p>Yes! 100% free.</p></div></div>
-                    <div class="faq-item"><button class="faq-question">What content can I download? <span>▾</span></button><div class="faq-answer"><p>Reels, Videos, Stories, Photos, Audio from public accounts.</p></div></div>
+                    <div class="faq-item"><button class="faq-question">Is DownReels free? <span>▾</span></button><div class="faq-answer"><p>Yes! 100% free.</p></div></div>
+                    <div class="faq-item"><button class="faq-question">What content can I download? <span>▾</span></button><div class="faq-answer"><p>Reels, Videos, Stories from public accounts.</p></div></div>
                     <div class="faq-item"><button class="faq-question">Watermark free? <span>▾</span></button><div class="faq-answer"><p>No watermarks. Original files.</p></div></div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer>
-        <p>© 2025 Snappy Insta. Not affiliated with Instagram.</p>
+    <footer style="position:relative;z-index:1;">
+        <p>© 2025 DownReels. Not affiliated with Instagram.</p>
     </footer>
 
     <!-- Toast -->
@@ -118,8 +111,87 @@
         <button class="toast-close" onclick="hideToast()">✕</button>
     </div>
 
+    <!-- Scripts -->
     <script src="assets/js/config.js"></script>
     <script src="assets/js/api.js"></script>
     <script src="assets/js/app.js"></script>
+
+    <!-- Particle Animation Script -->
+    <script>
+        (function() {
+            const container = document.getElementById('particle-bg');
+            const particleCount = 35; // 20-40 particles
+            const colors = ['#00f2ea', '#0ff', '#0ff0f0']; // cyan shades
+
+            function createParticle() {
+                const particle = document.createElement('div');
+                const size = Math.random() * 4 + 2; // 2px to 6px
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const duration = Math.random() * 15 + 10; // 10s to 25s
+                const delay = Math.random() * 5;
+                const drift = (Math.random() - 0.5) * 50; // -25px to 25px horizontal drift
+                const opacity = Math.random() * 0.3 + 0.2; // 0.2 - 0.5
+                const color = colors[Math.floor(Math.random() * colors.length)];
+
+                particle.className = 'particle';
+                particle.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${color};
+                    border-radius: 50%;
+                    opacity: ${opacity};
+                    left: ${x}%;
+                    top: ${y}%;
+                    box-shadow: 0 0 ${size * 2}px ${color}, 0 0 ${size * 4}px ${color};
+                    animation: float ${duration}s ${delay}s infinite linear;
+                    --drift: ${drift}px;
+                    pointer-events: none;
+                    filter: blur(0.5px);
+                `;
+                container.appendChild(particle);
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                createParticle();
+            }
+
+            // Add keyframes dynamically if not already in CSS
+            if (!document.querySelector('#particle-keyframes')) {
+                const styleSheet = document.createElement('style');
+                styleSheet.id = 'particle-keyframes';
+                styleSheet.textContent = `
+                    @keyframes float {
+                        0% {
+                            transform: translate(0, 100vh) scale(1);
+                            opacity: 0;
+                        }
+                        10% {
+                            opacity: 0.3;
+                        }
+                        90% {
+                            opacity: 0.3;
+                        }
+                        100% {
+                            transform: translate(var(--drift), -100vh) scale(0.8);
+                            opacity: 0;
+                        }
+                    }
+                    .particle {
+                        will-change: transform, opacity;
+                    }
+                `;
+                document.head.appendChild(styleSheet);
+            }
+
+            // Optional: mouse parallax effect
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth) * 2 - 1;
+                const y = (e.clientY / window.innerHeight) * 2 - 1;
+                container.style.transform = `translate(${x * 10}px, ${y * 10}px)`;
+            });
+        })();
+    </script>
 </body>
 </html>
