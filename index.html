@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DownReels - Instagram Video Downloader | HD No Watermark</title>
-    <meta name="description" content="Download Instagram Reels, Videos, Stories in HD. No watermark, no login, 100% free.">
+    <title>DownReels - Instagram Video Downloader</title>
+    <meta name="description" content="Download Instagram Reels, Videos in HD. No watermark, fast and free.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
@@ -13,185 +13,130 @@
 </head>
 <body class="dark">
 
-    <!-- ========== PARTICLE BACKGROUND ========== -->
-    <div id="particle-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden;"></div>
+<!-- ===== HEADER ===== -->
+<header class="navbar-instagram">
+    <!-- Brand (Left) -->
+    <a href="index.html" class="nav-brand">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5"/>
+        </svg>
+        DownReels
+    </a>
 
-    <!-- ========== HEADER ========== -->
-    <header class="navbar-instagram" style="position:relative;z-index:10;">
-        <a href="index.html" class="nav-brand">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5"/>
-            </svg>
-            DownReels
-        </a>
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
-            <a href="faq.html">FAQ</a>
-            <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
-                <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                </svg>
-                <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-                </svg>
-            </button>
+    <!-- Center Navigation -->
+    <nav class="nav-center">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="#faq" class="nav-link">Q&A</a>
+        <div class="dropdown">
+            <button class="nav-link dropdown-toggle">Tools <span class="arrow">▾</span></button>
+            <div class="dropdown-menu">
+                <a href="#" class="dropdown-item"><i class="icon">📸</i> Instagram</a>
+                <a href="#" class="dropdown-item"><i class="icon">📘</i> Facebook</a>
+                <a href="#" class="dropdown-item"><i class="icon">🐦</i> Twitter</a>
+                <a href="#" class="dropdown-item"><i class="icon">📌</i> Pinterest</a>
+                <a href="#" class="dropdown-item"><i class="icon">🎵</i> TikTok</a>
+                <a href="#" class="dropdown-item"><i class="icon">▶️</i> YouTube</a>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main style="position:relative;z-index:1;">
-        <!-- Hero -->
-        <section class="hero" id="hero">
-            <div class="container hero-container">
-                <h1 class="hero-title">Download Instagram <span class="gradient-text">Reels & Videos</span> Instantly</h1>
-                
-                <div class="downloader-card" id="downloaderCard">
-                    <div class="input-group">
-                        <input type="url" id="urlInput" class="url-input" placeholder="Paste Instagram URL here..." autocomplete="off">
-                        <button id="pasteBtn" class="btn-paste">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                            </svg>
-                            Paste
-                        </button>
-                    </div>
-                    <p class="error-msg" id="errorMsg"></p>
-                </div>
+    <!-- Theme Toggle (Right) -->
+    <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
+        <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+    </button>
+</header>
 
-                <div id="loader" class="loader-container" style="display:none;">
-                    <div class="spinner"></div>
-                    <p>Fetching media...</p>
+<!-- ===== MAIN ===== -->
+<main>
+    <!-- Hero / Downloader (same as before) -->
+    <section class="hero" id="hero">
+        <div class="container hero-container">
+            <h1 class="hero-title">Download Instagram <span class="gradient-text">Reels & Videos</span> Instantly</h1>
+            <div class="downloader-card" id="downloaderCard">
+                <div class="input-group">
+                    <input type="url" id="urlInput" class="url-input" placeholder="Paste Instagram URL here..." autocomplete="off">
+                    <button id="pasteBtn" class="btn-paste">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                        </svg>
+                        Paste & Download
+                    </button>
                 </div>
-
-                <div id="results" class="results-section" style="display:none;">
-                    <div id="resultsGrid" class="results-grid"></div>
-                </div>
+                <p class="error-msg" id="errorMsg"></p>
             </div>
-        </section>
-
-        <!-- Features -->
-        <section class="features" id="features">
-            <div class="container">
-                <div class="section-header">
-                    <span class="badge">✨ Features</span>
-                    <h2>Why DownReels?</h2>
-                </div>
-                <div class="features-grid">
-                    <div class="feature-card"><div class="feature-icon">⚡</div><h3>Lightning Fast</h3><p>Downloads start in seconds.</p></div>
-                    <div class="feature-card"><div class="feature-icon">🎥</div><h3>All Videos</h3><p>Reels, Videos, Stories supported.</p></div>
-                    <div class="feature-card"><div class="feature-icon">🔒</div><h3>100% Secure</h3><p>No account needed.</p></div>
-                    <div class="feature-card"><div class="feature-icon">💧</div><h3>No Watermark</h3><p>Clean original files.</p></div>
-                </div>
+            <div id="loader" class="loader-container" style="display:none;">
+                <div class="spinner"></div>
+                <p>Fetching media...</p>
             </div>
-        </section>
-
-        <!-- FAQ -->
-        <section class="faq" id="faq">
-            <div class="container">
-                <div class="section-header">
-                    <span class="badge">❓ FAQ</span>
-                    <h2>Frequently Asked Questions</h2>
-                </div>
-                <div class="faq-list">
-                    <div class="faq-item"><button class="faq-question">Is DownReels free? <span>▾</span></button><div class="faq-answer"><p>Yes! 100% free.</p></div></div>
-                    <div class="faq-item"><button class="faq-question">What content can I download? <span>▾</span></button><div class="faq-answer"><p>Reels, Videos, Stories from public accounts.</p></div></div>
-                    <div class="faq-item"><button class="faq-question">Watermark free? <span>▾</span></button><div class="faq-answer"><p>No watermarks. Original files.</p></div></div>
-                </div>
+            <div id="results" class="results-section" style="display:none;">
+                <div id="resultsGrid" class="results-grid"></div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <footer style="position:relative;z-index:1;">
-        <p>© 2025 DownReels. Not affiliated with Instagram.</p>
-    </footer>
+    <!-- Features (unchanged) -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="badge">✨ Features</span>
+                <h2>Why DownReels?</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon">⚡</div><h3>Lightning Fast</h3><p>Downloads start in seconds.</p></div>
+                <div class="feature-card"><div class="feature-icon">🎥</div><h3>All Formats</h3><p>Reels, Videos, Stories, Photos, Audio.</p></div>
+                <div class="feature-card"><div class="feature-icon">🔒</div><h3>100% Secure</h3><p>No account needed.</p></div>
+                <div class="feature-card"><div class="feature-icon">💧</div><h3>No Watermark</h3><p>Clean original files.</p></div>
+            </div>
+        </div>
+    </section>
 
-    <!-- Toast -->
-    <div id="toast" class="toast">
-        <span id="toastMsg"></span>
-        <button class="toast-close" onclick="hideToast()">✕</button>
+    <!-- FAQ (Q&A) -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="section-header">
+                <span class="badge">❓ Q&A</span>
+                <h2>Frequently Asked Questions</h2>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item"><button class="faq-question">Is DownReels free? <span>▾</span></button><div class="faq-answer"><p>Yes! 100% free.</p></div></div>
+                <div class="faq-item"><button class="faq-question">What content can I download? <span>▾</span></button><div class="faq-answer"><p>Reels, Videos, Stories, Photos, Audio from public accounts.</p></div></div>
+                <div class="faq-item"><button class="faq-question">Watermark free? <span>▾</span></button><div class="faq-answer"><p>No watermarks. Original files.</p></div></div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="footer-links">
+        <button class="footer-btn" data-modal="disclaimer">Disclaimer</button>
+        <button class="footer-btn" data-modal="policy">Privacy Policy</button>
+        <button class="footer-btn" data-modal="terms">Terms of Service</button>
     </div>
+    <p class="footer-copy">© 2025 DownReels. Not affiliated with Instagram.</p>
+</footer>
 
-    <!-- Scripts -->
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/api.js"></script>
-    <script src="assets/js/app.js"></script>
+<!-- ===== MODALS (Popups) ===== -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-card" id="modalCard">
+        <button class="modal-close" id="modalClose">✕</button>
+        <div class="modal-content" id="modalContent"></div>
+    </div>
+</div>
 
-    <!-- Particle Animation Script -->
-    <script>
-        (function() {
-            const container = document.getElementById('particle-bg');
-            const particleCount = 35; // 20-40 particles
-            const colors = ['#00f2ea', '#0ff', '#0ff0f0']; // cyan shades
+<!-- Toast Notification -->
+<div id="toast" class="toast">
+    <span id="toastMsg"></span>
+    <button class="toast-close" onclick="hideToast()">✕</button>
+</div>
 
-            function createParticle() {
-                const particle = document.createElement('div');
-                const size = Math.random() * 4 + 2; // 2px to 6px
-                const x = Math.random() * 100;
-                const y = Math.random() * 100;
-                const duration = Math.random() * 15 + 10; // 10s to 25s
-                const delay = Math.random() * 5;
-                const drift = (Math.random() - 0.5) * 50; // -25px to 25px horizontal drift
-                const opacity = Math.random() * 0.3 + 0.2; // 0.2 - 0.5
-                const color = colors[Math.floor(Math.random() * colors.length)];
-
-                particle.className = 'particle';
-                particle.style.cssText = `
-                    position: absolute;
-                    width: ${size}px;
-                    height: ${size}px;
-                    background: ${color};
-                    border-radius: 50%;
-                    opacity: ${opacity};
-                    left: ${x}%;
-                    top: ${y}%;
-                    box-shadow: 0 0 ${size * 2}px ${color}, 0 0 ${size * 4}px ${color};
-                    animation: float ${duration}s ${delay}s infinite linear;
-                    --drift: ${drift}px;
-                    pointer-events: none;
-                    filter: blur(0.5px);
-                `;
-                container.appendChild(particle);
-            }
-
-            for (let i = 0; i < particleCount; i++) {
-                createParticle();
-            }
-
-            // Add keyframes dynamically if not already in CSS
-            if (!document.querySelector('#particle-keyframes')) {
-                const styleSheet = document.createElement('style');
-                styleSheet.id = 'particle-keyframes';
-                styleSheet.textContent = `
-                    @keyframes float {
-                        0% {
-                            transform: translate(0, 100vh) scale(1);
-                            opacity: 0;
-                        }
-                        10% {
-                            opacity: 0.3;
-                        }
-                        90% {
-                            opacity: 0.3;
-                        }
-                        100% {
-                            transform: translate(var(--drift), -100vh) scale(0.8);
-                            opacity: 0;
-                        }
-                    }
-                    .particle {
-                        will-change: transform, opacity;
-                    }
-                `;
-                document.head.appendChild(styleSheet);
-            }
-
-            // Optional: mouse parallax effect
-            document.addEventListener('mousemove', (e) => {
-                const x = (e.clientX / window.innerWidth) * 2 - 1;
-                const y = (e.clientY / window.innerHeight) * 2 - 1;
-                container.style.transform = `translate(${x * 10}px, ${y * 10}px)`;
-            });
-        })();
-    </script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/app.js"></script>
 </body>
 </html>
