@@ -1,5 +1,5 @@
 async function fetchInstagramMedia(url) {
-    const apiUrl = `${CONFIG.API_BASE_URL}?url=${encodeURIComponent(url)}`;
+    const apiUrl = `${CONFIG.API_BASE_URL}?postUrl=${encodeURIComponent(url)}`;
     
     const options = {
         method: 'GET',
@@ -30,7 +30,7 @@ async function fetchInstagramMedia(url) {
 
         console.log('Parsed API Data:', data);
         
-        // Normalize response from new API
+        // Normalize the response to our standard format
         return normalizeNewAPIResponse(data);
         
     } catch (error) {
@@ -42,154 +42,101 @@ async function fetchInstagramMedia(url) {
 function normalizeNewAPIResponse(data) {
     let items = [];
     
-    // Handle the new API response structure
-    // The API returns different formats based on content type
-    
-    if (Array.isArray(data)) {
-        // If it's already an array
-        items = data;
-    } 
-    else if (data && data.media && Array.isArray(data.media)) {
-        // If media is in a media array
-        items = data.media;
-    }
-    else if (data && data.data && Array.isArray(data.data)) {
-        // If data is in a data array
-        items = data.data;
-    }
-    else if (data && data.items && Array.isArray(data.items)) {
-        // If items array exists
-        items = data.items;
-    }
-    else if (data && data.url) {
-        // Single media item
-        items = [data];
-    }
-    else if (data && data.video_url) {
-        // Video response
-        items = [{
-            type: 'video',
-            url: data.video_url,
-            thumbnail: data.thumbnail || data.thumb || '',
-            title: data.title || data.caption || data.description || 'Instagram Video',
-            username: data.username || data.owner || data.author || '@instagram',
-            duration: data.duration || '',
-            quality: data.quality || 'HD'
-        }];
-    }
-    else if (data && data.image_url) {
-        // Photo response
-        items = [{
-            type: 'photo',
-            url: data.image_url,
-            thumbnail: data.image_url,
-            title: data.caption || data.description || 'Instagram Photo',
-            username: data.username || data.owner || '@instagram'
-        }];
-    }
-    else if (data && data.audio_url) {
-        // Audio response
-        items = [{
-            type: 'audio',
-            url: data.audio_url,
-            thumbnail: data.thumbnail || '',
-            title: data.title || 'Instagram Audio',
-            username: data.username || data.artist || '@instagram',
-            duration: data.duration || ''
-        }];
-    }
-    else if (data && typeof data === 'object') {
-        // Try to extract any downloadable URLs from the response
-        const extractedItems = extractMediaFromObject(data);
-        items = extractedItems;
+    // The new API returns post statistics and media info
+    if (data && data.data) {
+        const post = data.data;
+        
+        // Extract media items
+        if (post.media && Array.isArray(post.media)) {
+            post.media.forEach(media => {
+                const item = {
+                    type: media.type || guessMediaTypeFromUrl(media.url || media.src || ''),
+                    url: media.url || media.src || media.video_url || media.download_url || '',
+                    thumbnail: media.thumbnail || media.preview || media.url || '',
+                    title: post.caption || post.title || post.text || 'Instagram Post',
+                    username: post.owner?.username || post.author || post.username || '@instagram',
+                    duration: media.duration || post.video_duration || '',
+                    quality: media.quality || 'HD',
+                    likes: post.likes || post.like_count || '',
+                    views: post.views || post.view_count || post.play_count || '',
+                    comments: post.comments || post.comment_count || ''
+                };
+                items.push(item);
+            });
+        }
+        
+        // If single media post
+        if (items.length === 0 && (post.url || post.video_url || post.src)) {
+            items.push({
+                type: post.type || guessMediaTypeFromUrl(post.url || post.video_url || ''),
+                url: post.url || post.video_url || post.src || post.download_url || '',
+                thumbnail: post.thumbnail || post.preview || post.url || '',
+                title: post.caption || post.title || post.text || 'Instagram Post',
+                username: post.owner?.username || post.author || post.username || '@instagram',
+                duration: post.duration || post.video_duration || '',
+                quality: 'HD',
+                likes: post.likes || post.like_count || '',
+                views: post.views || post.view_count || post.play_count || '',
+                comments: post.comments || post.comment_count || ''
+            });
+        }
+        
+        // Handle profile picture
+        if (post.profile_pic_url || post.owner?.profile_pic_url) {
+            items.push({
+                type: 'profile_picture',
+                url: post.profile_pic_url || post.owner?.profile_pic_url,
+                thumbnail: post.profile_pic_url || post.owner?.profile_pic_url,
+                title: post.owner?.full_name || post.owner?.username || 'Profile Picture',
+                username: post.owner?.username || '@instagram'
+            });
+        }
     }
     
-    // Ensure all items have proper structure
-    return items.map(item => ({
-        type: item.type || item.media_type || guessMediaType(item),
-        url: item.url || item.video_url || item.download_url || item.image_url || item.audio_url || item.src || '',
-        thumbnail: item.thumbnail || item.thumb || item.preview || item.image_url || item.url || '',
-        title: item.title || item.caption || item.description || item.text || 'Instagram Media',
-        username: item.username || item.owner || item.author || item.uploader || item.artist || '@instagram',
-        duration: item.duration || item.video_duration || item.length || '',
-        quality: item.quality || item.resolution || item.format || 'HD'
+    // If no items found, try to extract any URLs from the response
+    if (items.length === 0) {
+        items = extractUrlsFromObject(data);
+    }
+    
+    // Clean and validate items
+    return items.filter(item => item.url && item.url.startsWith('http')).map(item => ({
+        ...item,
+        url: item.url,
+        thumbnail: item.thumbnail || item.url,
+        title: item.title || 'Instagram Media',
+        username: item.username || '@instagram'
     }));
 }
 
-function extractMediaFromObject(obj) {
-    let items = [];
-    
-    // Recursively search for media URLs in the response object
-    function searchForMedia(obj, path = '') {
-        if (!obj || typeof obj !== 'object') return;
-        
-        // Check for direct media URLs
-        const mediaKeys = ['url', 'video_url', 'image_url', 'audio_url', 'download_url', 'src', 'link'];
-        
-        for (const key of mediaKeys) {
-            if (obj[key] && typeof obj[key] === 'string' && obj[key].startsWith('http')) {
-                items.push({
-                    url: obj[key],
-                    type: guessMediaType({ url: obj[key] }),
-                    thumbnail: obj.thumbnail || obj.thumb || obj[key],
-                    title: obj.title || obj.caption || obj.description || path + key,
-                    username: obj.username || obj.owner || obj.author || '@instagram',
-                    duration: obj.duration || '',
-                    quality: obj.quality || 'HD'
-                });
-            }
-        }
-        
-        // Recursively search nested objects
-        if (Array.isArray(obj)) {
-            obj.forEach((item, index) => searchForMedia(item, `${path}[${index}].`));
-        } else {
-            for (const key in obj) {
-                if (obj[key] && typeof obj[key] === 'object') {
-                    searchForMedia(obj[key], `${path}${key}.`);
-                }
-            }
-        }
-    }
-    
-    searchForMedia(obj);
-    
-    // Remove duplicates by URL
-    const uniqueItems = [];
-    const seenUrls = new Set();
-    
-    for (const item of items) {
-        if (!seenUrls.has(item.url)) {
-            seenUrls.add(item.url);
-            uniqueItems.push(item);
-        }
-    }
-    
-    return uniqueItems;
+function guessMediaTypeFromUrl(url) {
+    if (!url) return 'video';
+    if (url.includes('.mp4')) return 'video';
+    if (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.png') || url.includes('.webp')) return 'photo';
+    if (url.includes('profile') || url.includes('avatar')) return 'profile_picture';
+    if (url.includes('.mp3') || url.includes('audio')) return 'audio';
+    return 'video';
 }
 
-function guessMediaType(item) {
-    const url = item.url || item.video_url || item.image_url || item.audio_url || '';
+function extractUrlsFromObject(obj, prefix = '') {
+    let items = [];
     
-    if (url.includes('.mp4') || url.includes('video') || item.video_url || item.type === 'video') {
-        return 'video';
-    }
-    if (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.png') || url.includes('.webp') || item.image_url || item.type === 'photo') {
-        return 'photo';
-    }
-    if (url.includes('.mp3') || url.includes('audio') || item.audio_url || item.type === 'audio') {
-        return 'audio';
-    }
-    if (url.includes('story')) {
-        return 'story';
-    }
-    if (url.includes('reel')) {
-        return 'reel';
-    }
-    if (url.includes('profile') || url.includes('avatar')) {
-        return 'profile_picture';
+    if (!obj || typeof obj !== 'object') return items;
+    
+    for (const key in obj) {
+        const value = obj[key];
+        
+        if (typeof value === 'string' && value.startsWith('http')) {
+            items.push({
+                type: guessMediaTypeFromUrl(value),
+                url: value,
+                thumbnail: value,
+                title: prefix ? `${prefix}_${key}` : key,
+                username: '@instagram'
+            });
+        } else if (typeof value === 'object' && value !== null) {
+            items = items.concat(extractUrlsFromObject(value, key));
+        }
     }
     
-    // Default to video for Instagram content
-    return 'video';
+    return items;
 }
