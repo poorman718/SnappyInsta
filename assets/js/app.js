@@ -259,6 +259,117 @@
         if (t) t.classList.remove('show');
     };
 
+class Particle {
+    constructor() {
+        this.reset();
+    }
+
+    reset() {
+        // Random position
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        
+        // Size between 2px and 5px
+        this.size = Math.random() * 3 + 2;
+        
+        // Float upward slowly, with slight horizontal drift
+        this.speedX = (Math.random() - 0.5) * 0.3;  // horizontal drift
+        this.speedY = -(Math.random() * 0.4 + 0.2); // upward float
+        
+        // Random opacity 0.2–0.4
+        this.opacity = Math.random() * 0.2 + 0.2;
+        
+        // Random animation duration for pulsing
+        this.pulseSpeed = Math.random() * 0.02 + 0.01;
+        this.pulseOffset = Math.random() * Math.PI * 2;
+        
+        // Color always cyan
+        this.color = `rgba(0, 242, 234, ${this.opacity})`;
+        
+        // Glow effect (shadow)
+        this.glow = Math.random() * 5 + 3;
+    }
+
+    update() {
+        // Move particle
+        this.x += this.speedX;
+        this.y += this.speedY;
+        
+        // Subtle parallax: move particles slightly based on mouse
+        const parallaxStrength = 0.5;
+        this.x += (mouse.x - 0.5) * parallaxStrength * 0.1;
+        this.y += (mouse.y - 0.5) * parallaxStrength * 0.1;
+        
+        // Wrap around edges smoothly
+        if (this.y < -20) {
+            this.y = canvas.height + 20;
+            this.x = Math.random() * canvas.width;
+        }
+        if (this.x < -50) this.x = canvas.width + 50;
+        if (this.x > canvas.width + 50) this.x = -50;
+    }
+
+    draw() {
+        // Pulsing size based on sine wave
+        const pulse = Math.sin(Date.now() * this.pulseSpeed + this.pulseOffset) * 0.5 + 1;
+        const currentSize = this.size * pulse;
+        
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = '#e4eded';
+        
+        // Main circle with glow (using shadow)
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, currentSize, 0, Math.PI * 2);
+        ctx.shadowColor = '#e4eded';
+        ctx.shadowBlur = this.glow;
+        ctx.fill();
+        
+        // Optional second circle for extra glow
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = this.opacity * 0.5;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, currentSize * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 242, 234, 0.15)';
+        ctx.fill();
+        
+        ctx.restore();
+    }
+}
+
+function createParticles(count) {
+    particles = [];
+    for (let i = 0; i < count; i++) {
+        particles.push(new Particle());
+    }
+}
+
+function animateParticles() {
+    // Only render if canvas is visible (dark mode) to save CPU
+    if (parseFloat(getComputedStyle(canvas).opacity) > 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw subtle gradient background
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, '#0a0a0a');
+        gradient.addColorStop(1, '#1a1a1a');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Update and draw particles
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+    }
+    requestAnimationFrame(animateParticles);
+}
+
+// Initialize everything
+resizeCanvas();
+createParticles(30); // 30 particles – adjust as needed
+animateParticles();
+    
 })();
 
 // Add animation
