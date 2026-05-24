@@ -1,19 +1,78 @@
 (function() {
     'use strict';
 
-    // Theme Toggle
+    // ========== THEME TOGGLE ==========
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('light');
-            localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+            const isLight = document.body.classList.contains('light');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
         });
         const saved = localStorage.getItem('theme');
         if (saved === 'light') document.body.classList.add('light');
         else document.body.classList.remove('light');
     }
 
-    // App Elements
+    // ========== DROPDOWN TOGGLE ==========
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    const dropdown = document.querySelector('.dropdown');
+    if (dropdownToggle && dropdown) {
+        dropdownToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('open');
+        });
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => dropdown.classList.remove('open'));
+    }
+
+    // ========== MODALS (Disclaimer, Policy, Terms) ==========
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalContent = document.getElementById('modalContent');
+    const modalClose = document.getElementById('modalClose');
+
+    const modalData = {
+        disclaimer: {
+            title: 'Disclaimer',
+            text: 'This tool is for educational purposes only. We are not responsible for any misuse. Downloading content without permission may violate Instagram\'s terms of service. Use at your own risk.'
+        },
+        policy: {
+            title: 'Privacy Policy',
+            text: 'We do not collect, store, or share any personal data. All downloads are processed via third‑party APIs. No cookies or trackers are used. Your privacy is important to us.'
+        },
+        terms: {
+            title: 'Terms of Service',
+            text: 'By using this website, you agree to download only content that you have the right to access. We do not host any files; all media is fetched from Instagram\'s CDN. We are not affiliated with Instagram.'
+        }
+    };
+
+    function openModal(type) {
+        const data = modalData[type];
+        if (!data) return;
+        modalContent.innerHTML = `<h2>${data.title}</h2><p>${data.text}</p>`;
+        modalOverlay.classList.add('active');
+    }
+
+    function closeModal() {
+        modalOverlay.classList.remove('active');
+    }
+
+    if (modalOverlay) {
+        modalClose.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+    }
+
+    // Attach footer button events
+    document.querySelectorAll('.footer-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const modalType = btn.getAttribute('data-modal');
+            if (modalType) openModal(modalType);
+        });
+    });
+
+    // ========== APP LOGIC (DOWNLOADER) ==========
     const urlInput = document.getElementById('urlInput');
     const pasteBtn = document.getElementById('pasteBtn');
     const errorMsg = document.getElementById('errorMsg');
@@ -22,7 +81,6 @@
     const resultsGrid = document.getElementById('resultsGrid');
 
     if (!pasteBtn || !urlInput) return;
-
     let isFetching = false;
 
     // Paste Button
@@ -42,7 +100,7 @@
         }
     });
 
-    // Manual Paste (Ctrl+V)
+    // Manual Paste
     urlInput.addEventListener('paste', () => {
         setTimeout(async () => {
             const url = urlInput.value.trim();
@@ -54,21 +112,14 @@
 
     // Enter key
     urlInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            startDownload();
-        }
+        if (e.key === 'Enter') { e.preventDefault(); startDownload(); }
     });
 
     async function startDownload() {
         const url = urlInput.value.trim();
-        if (!url) {
-            errorMsg.textContent = 'Please enter a URL';
-            return;
-        }
+        if (!url) { errorMsg.textContent = 'Please enter a URL'; return; }
         if (!url.includes('instagram.com') && !url.includes('instagr.am')) {
-            errorMsg.textContent = 'Invalid Instagram URL';
-            return;
+            errorMsg.textContent = 'Invalid Instagram URL'; return;
         }
         if (isFetching) return;
 
@@ -81,7 +132,6 @@
 
         try {
             const data = await fetchInstagramMedia(url);
-            // Keep only video items
             const videos = data.filter(item => item.type === 'video' || (item.url && item.url.includes('.mp4')));
             if (videos.length === 0) throw new Error('No video found. This tool only downloads videos.');
             renderResults(videos);
@@ -106,7 +156,6 @@
             const card = document.createElement('div');
             card.className = 'result-row';
             card.style.animation = `fadeIn 0.3s ${i * 0.1}s both`;
-
             const title = item.title || 'Instagram Video';
             const shortTitle = title.split(' ').slice(0, 6).join(' ') + (title.split(' ').length > 6 ? '...' : '');
             const safeFilename = `${sanitize(title)}_${item.username || 'instagram'}.mp4`;
@@ -119,9 +168,7 @@
                 <div class="result-content">
                     <div>
                         <h3 class="result-title" title="Click to copy full title">${shortTitle}</h3>
-                        <div class="result-creator">
-                            <span class="creator-dot"></span>${item.username || '@instagram'}
-                        </div>
+                        <div class="result-creator"><span class="creator-dot"></span>${item.username || '@instagram'}</div>
                         <div class="result-meta">
                             <span class="meta-tag">🎥 Video</span>
                             ${item.likes ? `<span class="meta-tag">❤️ ${formatNum(item.likes)}</span>` : ''}
@@ -135,42 +182,31 @@
                 </div>
             `;
 
-            // Download button – DIRECT, same tab, no popup
+            // Download button
             card.querySelector('.btn-dl-row').addEventListener('click', async function(e) {
                 e.stopPropagation();
                 const btn = this;
-                const videoUrl = btn.getAttribute('data-url');
-                const filename = btn.getAttribute('data-filename') || `instagram_video.mp4`;
-
                 btn.disabled = true;
                 btn.innerHTML = '<span class="btn-spinner"></span> Downloading…';
-
                 try {
-                    // Attempt direct blob download
-                    const downloaded = await downloadBlob(videoUrl, filename);
+                    const downloaded = await downloadBlob(item.url, safeFilename);
                     if (downloaded) {
                         btn.innerHTML = '✓ Downloaded';
-                        showToast('Download complete!', 'success');
                     } else {
-                        // Fallback: anchor with download attribute
-                        triggerAnchorDownload(videoUrl, filename);
+                        triggerAnchorDownload(item.url, safeFilename);
                         btn.innerHTML = '✓ Downloaded';
-                        showToast('Download started', 'success');
                     }
-                } catch (err) {
-                    // Last resort: anchor
-                    triggerAnchorDownload(videoUrl, filename);
+                } catch {
+                    triggerAnchorDownload(item.url, safeFilename);
                     btn.innerHTML = '✓ Downloaded';
-                    showToast('Download started', 'success');
                 }
-
                 setTimeout(() => {
                     btn.disabled = false;
                     btn.innerHTML = '⬇ Download Video';
                 }, 2500);
             });
 
-            // New Link button – reset everything
+            // New Link button
             card.querySelector('.btn-new-link').addEventListener('click', () => {
                 document.body.classList.remove('results-active');
                 results.style.display = 'none';
@@ -179,7 +215,7 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
-            // Click title to copy
+            // Title copy
             card.querySelector('.result-title').addEventListener('click', async () => {
                 await navigator.clipboard.writeText(title);
                 showToast('Title copied!', 'success');
@@ -189,7 +225,6 @@
         });
     }
 
-    // Download as blob (direct)
     async function downloadBlob(url, filename) {
         try {
             const response = await fetch(url, { mode: 'cors' });
@@ -200,7 +235,6 @@
             const a = document.createElement('a');
             a.href = blobUrl;
             a.download = filename;
-            a.style.display = 'none';
             document.body.appendChild(a);
             a.click();
             setTimeout(() => {
@@ -208,19 +242,14 @@
                 URL.revokeObjectURL(blobUrl);
             }, 1000);
             return true;
-        } catch (e) {
-            console.warn('Blob download failed, using fallback', e);
-            return false;
-        }
+        } catch { return false; }
     }
 
-    // Fallback: anchor with download attribute (same tab)
     function triggerAnchorDownload(url, filename) {
         const a = document.createElement('a');
         a.href = url;
         a.download = filename;
         a.target = '_self';
-        a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
         setTimeout(() => document.body.removeChild(a), 500);
@@ -243,7 +272,7 @@
         btn.addEventListener('click', () => btn.closest('.faq-item').classList.toggle('open'));
     });
 
-    // Toast notification
+    // Toast
     window.showToast = function(msg, type = 'success') {
         const t = document.getElementById('toast');
         const tm = document.getElementById('toastMsg');
@@ -259,117 +288,6 @@
         if (t) t.classList.remove('show');
     };
 
-class Particle {
-    constructor() {
-        this.reset();
-    }
-
-    reset() {
-        // Random position
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        
-        // Size between 2px and 5px
-        this.size = Math.random() * 3 + 2;
-        
-        // Float upward slowly, with slight horizontal drift
-        this.speedX = (Math.random() - 0.5) * 0.3;  // horizontal drift
-        this.speedY = -(Math.random() * 0.4 + 0.2); // upward float
-        
-        // Random opacity 0.2–0.4
-        this.opacity = Math.random() * 0.2 + 0.2;
-        
-        // Random animation duration for pulsing
-        this.pulseSpeed = Math.random() * 0.02 + 0.01;
-        this.pulseOffset = Math.random() * Math.PI * 2;
-        
-        // Color always cyan
-        this.color = `rgba(0, 242, 234, ${this.opacity})`;
-        
-        // Glow effect (shadow)
-        this.glow = Math.random() * 5 + 3;
-    }
-
-    update() {
-        // Move particle
-        this.x += this.speedX;
-        this.y += this.speedY;
-        
-        // Subtle parallax: move particles slightly based on mouse
-        const parallaxStrength = 0.5;
-        this.x += (mouse.x - 0.5) * parallaxStrength * 0.1;
-        this.y += (mouse.y - 0.5) * parallaxStrength * 0.1;
-        
-        // Wrap around edges smoothly
-        if (this.y < -20) {
-            this.y = canvas.height + 20;
-            this.x = Math.random() * canvas.width;
-        }
-        if (this.x < -50) this.x = canvas.width + 50;
-        if (this.x > canvas.width + 50) this.x = -50;
-    }
-
-    draw() {
-        // Pulsing size based on sine wave
-        const pulse = Math.sin(Date.now() * this.pulseSpeed + this.pulseOffset) * 0.5 + 1;
-        const currentSize = this.size * pulse;
-        
-        ctx.save();
-        ctx.globalAlpha = this.opacity;
-        ctx.fillStyle = '#e4eded';
-        
-        // Main circle with glow (using shadow)
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, currentSize, 0, Math.PI * 2);
-        ctx.shadowColor = '#e4eded';
-        ctx.shadowBlur = this.glow;
-        ctx.fill();
-        
-        // Optional second circle for extra glow
-        ctx.shadowBlur = 0;
-        ctx.globalAlpha = this.opacity * 0.5;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, currentSize * 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 242, 234, 0.15)';
-        ctx.fill();
-        
-        ctx.restore();
-    }
-}
-
-function createParticles(count) {
-    particles = [];
-    for (let i = 0; i < count; i++) {
-        particles.push(new Particle());
-    }
-}
-
-function animateParticles() {
-    // Only render if canvas is visible (dark mode) to save CPU
-    if (parseFloat(getComputedStyle(canvas).opacity) > 0) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Draw subtle gradient background
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, '#0a0a0a');
-        gradient.addColorStop(1, '#1a1a1a');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Update and draw particles
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-        });
-    }
-    requestAnimationFrame(animateParticles);
-}
-
-// Initialize everything
-resizeCanvas();
-createParticles(30); // 30 particles – adjust as needed
-animateParticles();
-    
 })();
 
 // Add animation
