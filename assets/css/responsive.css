@@ -1,8 +1,7 @@
 @media (max-width: 900px) {
-    .navbar-instagram { flex-wrap: wrap; justify-content: center; gap: 1rem; }
-    .nav-center { position: static; transform: none; order: 3; width: 100%; justify-content: center; }
+    .navbar-instagram { justify-content: center; }
+    .nav-center { position: static; transform: none; order: 3; width: 100%; justify-content: center; margin-top: 0.5rem; }
     .theme-toggle-btn { position: absolute; right: 1rem; top: 1rem; }
-    .nav-brand { order: 1; }
 }
 
 @media (max-width: 768px) {
