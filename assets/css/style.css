@@ -115,7 +115,7 @@ body:not(.light) .sun-icon { display: none; }
 /* ========== HERO / DOWNLOADER ========== */
 .hero {
     background: var(--ig-gradient);
-    min-height: 85vh;
+    min-height: 100vh;
     display: flex; align-items: center; justify-content: center;
     text-align: center; position: relative; padding: 4rem 0;
 }
@@ -128,9 +128,9 @@ body.light .hero::before { background: rgba(255,255,255,0.9); }
 /* ========== INPUT CARD WIDTH BADHAYA GAYA ========== */
 .downloader-card {
     background: var(--surface); border:1px solid var(--border);
-    border-radius: var(--radius); padding:2.5rem 3rem;
+    border-radius: var(--radius); padding:2.5rem 5rem;
     box-shadow: var(--shadow);
-    max-width: 800px;      /* 👈 650px se badhakar 800px */
+    max-width: 1000px;      /* 👈 650px se badhakar 800px */
     margin:0 auto;
 }
 .input-group { display:flex; gap:1rem; flex-wrap:wrap; }
@@ -172,7 +172,7 @@ body.light .hero::before { background: rgba(255,255,255,0.9); }
 }
 .result-row:hover { transform:translateY(-2px); }
 .result-preview {
-    width: 380px;           /* 👈 thoda bada preview */
+    width: 880px;           /* 👈 thoda bada preview */
     height: 240px;
     border-radius:12px; overflow:hidden;
     background:var(--bg-secondary); flex-shrink:0; position:relative;
